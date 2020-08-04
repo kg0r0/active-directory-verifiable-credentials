@@ -6,12 +6,13 @@ var express = require('express')
 var session = require('express-session')
 var base64url = require('base64url')
 var secureRandom = require('secure-random');
+var ngrok = require('ngrok');
 
 //////////////// Verifiable Credential SDK
-var { CryptoBuilder, 
-      LongFormDid, 
-      RequestorBuilder
-    } = require('verifiablecredentials-verification-sdk-typescript');
+var { CryptoBuilder,
+  LongFormDid,
+  RequestorBuilder
+} = require('verifiablecredentials-verification-sdk-typescript');
 
 /////////// Verifiable Credential configuration values
 const credential = 'https://portableidentitycards.azure-api.net/v1.0/9c59be8b-bd18-45d9-b9d9-082bc07c094f/portableIdentities/contracts/Ninja%20Card';
@@ -37,7 +38,8 @@ const crypto = new CryptoBuilder(did, signingKeyReference).build();
 // Note: You'll want to update the hostname and port values for your setup.
 const app = express()
 const port = 8081
-const host = 'https://d7ed8827238f.ngrok.io'
+let host = '827238f.ngrok.io'
+//const host = 'https://d7ed8827238f.ngrok.io'
 
 // Serve static files out of the /public directory
 app.use(express.static('public'))
@@ -54,8 +56,8 @@ app.use(session({
 }))
 
 // Serve index.html as the home page
-app.get('/', function (req, res) { 
-  res.sendFile('public/index.html', {root: __dirname})
+app.get('/', function (req, res) {
+  res.sendFile('public/index.html', { root: __dirname })
 })
 
 // Generate an issuance request, cache it on the server,
@@ -69,9 +71,9 @@ app.get('/issue-request', async (req, res) => {
     crypto: crypto,
     attestation: {
       presentations: [
-        { 
-          credentialType: credentialType, 
-          contracts: [credential], 
+        {
+          credentialType: credentialType,
+          contracts: [credential],
         }
       ]
     }
@@ -79,7 +81,7 @@ app.get('/issue-request', async (req, res) => {
 
   // Cache the issue request on the server
   req.session.issueRequest = await requestBuilder.build().create();
-  
+
   // Return a reference to the issue request that can be encoded as a QR code
   var requestUri = encodeURIComponent(`${host}/issue-request.jwt?id=${req.session.id}`);
   var issueRequestReference = 'openid://vc/?request_uri=' + requestUri;
@@ -99,6 +101,16 @@ app.get('/issue-request.jwt', async (req, res) => {
   })
 
 })
+
+connectNgrok().then(url => {
+  console.log('URL : ' + host);
+});
+
+async function connectNgrok() {
+  host = await ngrok.connect(port);
+  return host;
+}
+
 
 // start server
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
