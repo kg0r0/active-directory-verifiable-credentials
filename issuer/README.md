@@ -57,6 +57,12 @@ To issue a verifiable credential, run the website and navigate to the homepage. 
 2. In Authenticator, add an account and choose **Other account**. Scan the QR code.
 3. Follow the instructions to receive your verifiable credential.
 
+## RUN the sample (Heroku)
+
+1. Provision an app with `heroku create` 
+2. Deploy with `git subtree push --prefix issuer/ heroku master`
+3. Set environment variable with `heroku config:add APP_NAME=[APP NAME]`
+
 ## Modifying the code to use your issuer
 
 If you've created your own issuer following our [documentation](https://aka.ms/didfordevs), you can edit the code in `app.js` to use your issuer.

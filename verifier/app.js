@@ -22,8 +22,8 @@ var { CryptoBuilder,
 //////////// Main Express server function
 // Note: You'll want to update the host and port values for your setup.
 const app = express()
-const port = 8082
-const host = 'https://bf78b9d81182.ngrok.io'
+const port = process.env.PORT 
+const host = `https://${process.env.APP_NAME}.herokuapp.com`
 
 /////////// OpenID Connect Client Registration
 const client = {

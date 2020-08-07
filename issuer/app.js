@@ -36,8 +36,8 @@ const crypto = new CryptoBuilder(did, signingKeyReference).build();
 //////////// Main Express server function
 // Note: You'll want to update the hostname and port values for your setup.
 const app = express()
-const port = 8081
-const host = 'https://d7ed8827238f.ngrok.io'
+const port = process.env.PORT 
+const host = `https://${process.env.APP_NAME}.herokuapp.com`
 
 // Serve static files out of the /public directory
 app.use(express.static('public'))
